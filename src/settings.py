@@ -13,7 +13,7 @@ from dataset_tools.templates import (
 ##################################
 # * Before uploading to instance #
 ##################################
-PROJECT_NAME: str = "Deep Doors V2.0"
+PROJECT_NAME: str = "Deep Doors v2.0"
 PROJECT_NAME_FULL: str = "DeepDoors Version 2.0 Dataset"
 HIDE_DATASET = True  # set False when 100% sure about repo quality
 
@@ -40,7 +40,7 @@ if RELEASE_DATE is None:
 HOMEPAGE_URL: str = "https://github.com/gasparramoa/DeepDoors2"
 # e.g. "https://some.com/dataset/homepage"
 
-PREVIEW_IMAGE_ID: int = 14234809
+PREVIEW_IMAGE_ID: int = 14240809
 # This should be filled AFTER uploading images to instance, just ID of any image.
 
 GITHUB_URL: str = "https://github.com/dataset-ninja/deep-doors2"
