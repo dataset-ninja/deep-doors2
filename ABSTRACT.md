@@ -1,4 +1,4 @@
-The authors built a 3D and RGB door **DeepDoors Version 2.0 Dataset** with images from several indoor environments using a 3D Realsense camera D435. It is constituted by 3 parts, a 2D and 3D image classifcation part, a semantic segmentation part and an object detection part. Main Dataset features:
+The authors built a 3D and RGB door **DeepDoors Version 2.0 Dataset** with images from several indoor environments using a 3D Realsense camera D435. It is constituted by 3 parts, a 2D and 3D image classifcation part, a semantic segmentation part and an object detection part. Main features:
 
 * The authors propose three different door state classifcation methods, where each one uses different types of information, and all are capable of working in real-time in low-power systems.
 * The labelled dataset with RGB and depth images of ***closed***, ***open*** and ***semi-open*** doors for 2D and 3D state door classifcation.
