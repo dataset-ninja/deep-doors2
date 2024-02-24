@@ -1,12 +1,18 @@
-import supervisely as sly
+import glob
 import os
-from dataset_tools.convert import unpack_if_archive
-import src.settings as s
-from urllib.parse import unquote, urlparse
-from supervisely.io.fs import get_file_name, get_file_size
 import shutil
+from urllib.parse import unquote, urlparse
 
+import cv2
+import numpy as np
+import supervisely as sly
+from cv2 import connectedComponents
+from dataset_tools.convert import unpack_if_archive
+from supervisely.io.fs import file_exists, get_file_name, get_file_name_with_ext
 from tqdm import tqdm
+
+import src.settings as s
+
 
 def download_dataset(teamfiles_dir: str) -> str:
     """Use it for large datasets to convert them on the instance"""
@@ -29,7 +35,7 @@ def download_dataset(teamfiles_dir: str) -> str:
             total=fsize,
             unit="B",
             unit_scale=True,
-        ) as pbar:        
+        ) as pbar:
             api.file.download(team_id, teamfiles_path, local_path, progress_cb=pbar)
         dataset_path = unpack_if_archive(local_path)
 
@@ -57,7 +63,8 @@ def download_dataset(teamfiles_dir: str) -> str:
 
         dataset_path = storage_dir
     return dataset_path
-    
+
+
 def count_files(path, extension):
     count = 0
     for root, dirs, files in os.walk(path):
@@ -65,21 +72,102 @@ def count_files(path, extension):
             if file.endswith(extension):
                 count += 1
     return count
-    
+
+
 def convert_and_upload_supervisely_project(
     api: sly.Api, workspace_id: int, project_name: str
 ) -> sly.ProjectInfo:
     ### Function should read local dataset and upload it to Supervisely project, then return project info.###
-    raise NotImplementedError("The converter should be implemented manually.")
+    dataset_path = "/home/alex/DATASETS/TODO/DeepDoors2/Door Classification-20240224T090110Z-001/Door Classification/RGB"
+    im_folder = "img"
+    mask_folder = "mask"
+    batch_size = 30
+    group_tag_name = "im_id"
 
-    # dataset_path = "/local/path/to/your/dataset" # general way
-    # dataset_path = download_dataset(teamfiles_dir) # for large datasets stored on instance
+    masks_path = "/home/alex/DATASETS/TODO/DeepDoors2/Door Detection_Segmentation-20240224T084558Z-001/Door Detection_Segmentation/Annotations"
 
-    # ... some code here ...
+    def create_ann(image_path):
+        labels = []
+        tags = []
 
-    # sly.logger.info('Deleting temporary app storage files...')
-    # shutil.rmtree(storage_dir)
+        group_id = sly.Tag(group_tag_meta, value=int(get_file_name(image_path)[4:]))
+        tags.append(group_id)
 
-    # return project
+        class_value = image_path.split("/")[-2]
+        class_tag = sly.Tag(name_to_test[class_value])
+        tags.append(class_tag)
 
+        # image_np = sly.imaging.image.read(image_path)[:, :, 0]
+        img_height = 640  # image_np.shape[0]
+        img_wight = 480  # image_np.shape[1]
 
+        mask_path = os.path.join(masks_path, get_file_name_with_ext(image_path))
+
+        if file_exists(mask_path):
+            mask_np = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
+            # mask_np = sly.imaging.image.read(mask_path)[:, :, 0]
+            mask = mask_np != 0
+
+            ret, curr_mask = connectedComponents(mask.astype("uint8"), connectivity=8)
+            for i in range(1, ret):
+                obj_mask = curr_mask == i
+                curr_bitmap = sly.Bitmap(obj_mask)
+                curr_label = sly.Label(curr_bitmap, boulder)
+                labels.append(curr_label)
+
+        return sly.Annotation(img_size=(img_height, img_wight), labels=labels, img_tags=tags)
+
+    project = api.project.create(workspace_id, project_name, change_name_if_conflict=True)
+
+    boulder = sly.ObjClass("door", sly.Bitmap)
+
+    open_meta = sly.TagMeta("open", sly.TagValueType.NONE)
+    close_meta = sly.TagMeta("close", sly.TagValueType.NONE)
+    semi_meta = sly.TagMeta("semi-open", sly.TagValueType.NONE)
+
+    name_to_test = {"Open": open_meta, "Closed": close_meta, "Semi": semi_meta}
+
+    group_tag_meta = sly.TagMeta(group_tag_name, sly.TagValueType.ANY_NUMBER)
+
+    meta = sly.ProjectMeta(
+        obj_classes=[boulder],
+        tag_metas=[group_tag_meta, open_meta, close_meta, semi_meta],
+    )
+    api.project.update_meta(project.id, meta.to_json())
+    api.project.images_grouping(id=project.id, enable=True, tag_name=group_tag_name)
+
+    for ds_name in os.listdir(dataset_path):
+        dataset = api.dataset.create(project.id, ds_name, change_name_if_conflict=True)
+
+        curr_im_path = os.path.join(dataset_path, ds_name)
+        images_pathes = glob.glob(curr_im_path + "/*/*.png")
+        real_images_pathes = []
+        for im_path in images_pathes:
+            if "(" not in im_path:
+                real_images_pathes.append(im_path)
+
+        progress = sly.Progress("Create dataset {}".format(ds_name), len(real_images_pathes))
+
+        for img_pathes_batch in sly.batched(real_images_pathes, batch_size=batch_size):
+            images_pathes_batch = []
+            images_names_batch = []
+            for im_path in img_pathes_batch:
+                images_names_batch.append(get_file_name_with_ext(im_path))
+                images_pathes_batch.append(im_path)
+
+                images_names_batch.append("depth_" + get_file_name_with_ext(im_path))
+                depth_path = im_path.replace("RGB", "Depth")
+                images_pathes_batch.append(depth_path)
+
+            img_infos = api.image.upload_paths(dataset.id, images_names_batch, images_pathes_batch)
+            img_ids = [im_info.id for im_info in img_infos]
+
+            anns = []
+            for i in range(0, len(images_pathes_batch), 2):
+                ann = create_ann(images_pathes_batch[i])
+                anns.extend([ann, ann])
+            api.annotation.upload_anns(img_ids, anns)
+
+            progress.iters_done_report(len(images_names_batch))
+
+    return project
