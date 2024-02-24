@@ -86,6 +86,20 @@ def convert_and_upload_supervisely_project(
 
     masks_path = "/home/alex/DATASETS/TODO/DeepDoors2/Door Detection_Segmentation-20240224T084558Z-001/Door Detection_Segmentation/Annotations"
 
+    def get_unique_colors(img):
+        unique_colors = []
+        img = img.astype(np.int32)
+        h, w = img.shape[:2]
+        colhash = img[:, :, 0] * 256 * 256 + img[:, :, 1] * 256 + img[:, :, 2]
+        unq, unq_inv, unq_cnt = np.unique(colhash, return_inverse=True, return_counts=True)
+        indxs = np.split(np.argsort(unq_inv), np.cumsum(unq_cnt[:-1]))
+        col2indx = {unq[i]: indxs[i][0] for i in range(len(unq))}
+        for col, indx in col2indx.items():
+            if col != 0:
+                unique_colors.append((col // (256**2), (col // 256) % 256, col % 256))
+
+        return unique_colors
+
     def create_ann(image_path):
         labels = []
         tags = []
@@ -104,16 +118,14 @@ def convert_and_upload_supervisely_project(
         mask_path = os.path.join(masks_path, get_file_name_with_ext(image_path))
 
         if file_exists(mask_path):
-            mask_np = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
-            # mask_np = sly.imaging.image.read(mask_path)[:, :, 0]
-            mask = mask_np != 0
-
-            ret, curr_mask = connectedComponents(mask.astype("uint8"), connectivity=8)
-            for i in range(1, ret):
-                obj_mask = curr_mask == i
-                curr_bitmap = sly.Bitmap(obj_mask)
-                curr_label = sly.Label(curr_bitmap, boulder)
-                labels.append(curr_label)
+            # mask_np = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
+            mask_np = sly.imaging.image.read(mask_path)  # [:, :, 0]
+            unique_colors = get_unique_colors(mask_np)
+            for color in unique_colors:
+                mask = np.all(mask_np == color, axis=2)
+                bitmap = sly.Bitmap(data=mask)
+                label = sly.Label(bitmap, boulder)
+                labels.append(label)
 
         return sly.Annotation(img_size=(img_height, img_wight), labels=labels, img_tags=tags)
 

@@ -13,7 +13,7 @@ from dataset_tools.templates import (
 ##################################
 # * Before uploading to instance #
 ##################################
-PROJECT_NAME: str = "Deep Doors2"
+PROJECT_NAME: str = "Deep Doors V2.0"
 PROJECT_NAME_FULL: str = "DeepDoors Version 2.0 Dataset"
 HIDE_DATASET = True  # set False when 100% sure about repo quality
 
