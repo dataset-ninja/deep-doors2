@@ -1,11 +1,15 @@
 If you make use of the Deep Doors2 data, please cite the following reference:
 
 ``` bibtex 
-@dataset{Deep Doors2,
-  author={João Gaspar Ramôa and Vasco Lopes and Luís Alexandre and S. Mogo},
-  title={Deep Doors2 Dataset},
-  year={2021},
-  url={https://github.com/gasparramoa/DeepDoors2}
+@article{article,
+  author = {Ramôa, João and Lopes, Vasco and Alexandre, Luís and Mogo, Sandra},
+  year = {2021},
+  month = {05},
+  pages = {},
+  title = {Real-time 2D–3D door detection and state classification on a low-power device},
+  volume = {3},
+  journal = {SN Applied Sciences},
+  doi = {10.1007/s42452-021-04588-3}
 }
 ```
 

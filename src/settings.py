@@ -14,21 +14,22 @@ from dataset_tools.templates import (
 # * Before uploading to instance #
 ##################################
 PROJECT_NAME: str = "Deep Doors2"
-PROJECT_NAME_FULL: str = "Deep Doors2 Dataset"
+PROJECT_NAME_FULL: str = "DeepDoors Version 2.0 Dataset"
 HIDE_DATASET = True  # set False when 100% sure about repo quality
 
 ##################################
 # * After uploading to instance ##
 ##################################
 LICENSE: License = License.Unknown()
-APPLICATIONS: List[Union[Industry, Domain, Research]] = [Industry.Robotics()]
-CATEGORY: Category = Category.Robotics()
+APPLICATIONS: List[Union[Industry, Domain, Research]] = [Industry.Robotics(), Industry.Safety()]
+CATEGORY: Category = Category.Robotics(extra=Category.Safety())
 
 CV_TASKS: List[CVTask] = [
     CVTask.InstanceSegmentation(),
     CVTask.SemanticSegmentation(),
     CVTask.ObjectDetection(),
     CVTask.Classification(),
+    CVTask.MonocularDepthEstimation(),
 ]
 ANNOTATION_TYPES: List[AnnotationType] = [AnnotationType.InstanceSegmentation()]
 
