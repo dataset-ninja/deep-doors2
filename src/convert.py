@@ -104,7 +104,7 @@ def convert_and_upload_supervisely_project(
         labels = []
         tags = []
 
-        group_id = sly.Tag(group_tag_meta, value=int(get_file_name(image_path)[4:]))
+        group_id = sly.Tag(group_tag_meta, value=get_file_name(image_path)[4:])
         tags.append(group_id)
 
         class_value = image_path.split("/")[-2]
@@ -139,7 +139,7 @@ def convert_and_upload_supervisely_project(
 
     name_to_test = {"Open": open_meta, "Closed": close_meta, "Semi": semi_meta}
 
-    group_tag_meta = sly.TagMeta(group_tag_name, sly.TagValueType.ANY_NUMBER)
+    group_tag_meta = sly.TagMeta(group_tag_name, sly.TagValueType.ANY_STRING)
 
     meta = sly.ProjectMeta(
         obj_classes=[boulder],

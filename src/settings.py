@@ -13,14 +13,16 @@ from dataset_tools.templates import (
 ##################################
 # * Before uploading to instance #
 ##################################
-PROJECT_NAME: str = "Deep Doors v2.0"
+PROJECT_NAME: str = "DeepDoors2"
 PROJECT_NAME_FULL: str = "DeepDoors Version 2.0 Dataset"
 HIDE_DATASET = True  # set False when 100% sure about repo quality
 
 ##################################
 # * After uploading to instance ##
 ##################################
-LICENSE: License = License.Unknown()
+LICENSE: License = License.PubliclyAvailable(
+    source_url="https://link.springer.com/article/10.1007/s42452-021-04588-3"
+)
 APPLICATIONS: List[Union[Industry, Domain, Research]] = [Industry.Robotics(), Industry.Safety()]
 CATEGORY: Category = Category.Robotics(extra=Category.Safety())
 
@@ -31,7 +33,10 @@ CV_TASKS: List[CVTask] = [
     CVTask.Classification(),
     CVTask.MonocularDepthEstimation(),
 ]
-ANNOTATION_TYPES: List[AnnotationType] = [AnnotationType.InstanceSegmentation()]
+ANNOTATION_TYPES: List[AnnotationType] = [
+    AnnotationType.InstanceSegmentation(),
+    AnnotationType.MonocularDepthEstimation(),
+]
 
 RELEASE_DATE: Optional[str] = "2021-04-17"  # e.g. "YYYY-MM-DD"
 if RELEASE_DATE is None:
@@ -40,7 +45,7 @@ if RELEASE_DATE is None:
 HOMEPAGE_URL: str = "https://github.com/gasparramoa/DeepDoors2"
 # e.g. "https://some.com/dataset/homepage"
 
-PREVIEW_IMAGE_ID: int = 14240809
+PREVIEW_IMAGE_ID: int = 14276771
 # This should be filled AFTER uploading images to instance, just ID of any image.
 
 GITHUB_URL: str = "https://github.com/dataset-ninja/deep-doors2"
