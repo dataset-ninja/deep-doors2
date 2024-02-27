@@ -1,6 +1,6 @@
 Dataset **DeepDoors2** can be downloaded in [Supervisely format](https://developer.supervisely.com/api-references/supervisely-annotation-json-format):
 
- [Download](https://assets.supervisely.com/supervisely-supervisely-assets-public/teams_storage/i/l/Kr/heN2O31Rk7vkMak6pPtUfygTxef14IrJMbiNzPuJYPMZglxK6hSY4QsMxqWGHYfvMMiYKlR64iRFf82NRxvOqhkN3QmOyU6AOSYDUup5i7n84xJMKFC90A9knVRL.tar)
+ [Download](https://www.dropbox.com/scl/fi/xap5kufxpvd3i3uiv59p9/deepdoors2-DatasetNinja.tar?rlkey=82einm96h448bk2bn9us6sp0e&dl=1)
 
 As an alternative, it can be downloaded with *dataset-tools* package:
 ``` bash
