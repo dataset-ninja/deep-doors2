@@ -23,8 +23,8 @@ HIDE_DATASET = False  # set False when 100% sure about repo quality
 LICENSE: License = License.PubliclyAvailable(
     source_url="https://link.springer.com/article/10.1007/s42452-021-04588-3"
 )
-APPLICATIONS: List[Union[Industry, Domain, Research]] = [Industry.Robotics(), Industry.Safety()]
-CATEGORY: Category = Category.Robotics(extra=Category.Safety())
+APPLICATIONS: List[Union[Industry, Domain, Research]] = [Industry.Robotics()]
+CATEGORY: Category = Category.Robotics()
 
 CV_TASKS: List[CVTask] = [
     CVTask.InstanceSegmentation(),
