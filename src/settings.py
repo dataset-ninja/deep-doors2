@@ -93,7 +93,7 @@ SLYTAGSPLIT: Optional[Dict[str, Union[List[str], str]]] = {
     "door positions": ["open", "close", "semi-open"],
     "__POSTTEXT__": "Additionally, images are grouped by ***im_id***",
 }
-TAGS: Optional[List[str]] = None
+TAGS: Optional[List[str]] = ['multi-view']
 
 
 SECTION_EXPLORE_CUSTOM_DATASETS: Optional[List[str]] = None
